@@ -1,0 +1,118 @@
+============================
+Telegram Bot Admin Dashboard Deployment Guide
+============================
+
+This project is a full-stack Telegram bot admin dashboard with:
+- Python Flask backend (REST API, SocketIO, Telegram bot logic)
+- React (MUI) frontend (admin dashboard UI)
+- SQLite database (default, can use PostgreSQL)
+- python-telegram-bot & pyrogram for Telegram integration
+
+You can deploy on Railway, Render, Heroku, VPS, or your own server.
+
+----------------------------
+1. Prerequisites
+----------------------------
+- Python 3.9+
+- Node.js 16+
+- Git
+- (Recommended) Railway/Render/Heroku account
+- Telegram Bot Token, API_ID, API_HASH, CHANNEL_ID
+
+----------------------------
+2. Environment Variables
+----------------------------
+Create a `.env` file or set these in Railway/Render dashboard:
+
+BOT_TOKEN=your_telegram_bot_token
+API_ID=your_pyrogram_api_id
+API_HASH=your_pyrogram_api_hash
+CHANNEL_ID=@your_channel_username_or_id
+CHANNEL_URL=https://t.me/your_channel
+# Optional: WELCOME_TEXT=Welcome {mention} to {title}!
+
+----------------------------
+3. Backend (Flask) Deployment
+----------------------------
+A. Install dependencies:
+   pip install -r requirements.txt
+
+B. Make sure your `api.py` uses the correct port:
+   import os
+   port = int(os.environ.get("PORT", 5001))
+   socketio.run(app, host="0.0.0.0", port=port)
+
+C. Start the backend:
+   python api.py
+   # Or for production:
+   gunicorn -k eventlet -w 1 api:app --bind 0.0.0.0:$PORT
+
+D. On Railway/Render:
+   - Set the start command to above
+   - Add environment variables in the dashboard
+   - Expose the correct port (usually $PORT)
+
+----------------------------
+4. Frontend (React) Deployment
+----------------------------
+A. Build the React app:
+   cd admin
+   npm install
+   npm run build
+
+B. Serve the build folder:
+   - Option 1: Use Flask to serve static files (see api.py for example)
+   - Option 2: Deploy `admin/build` as a static site (Railway/Netlify/Vercel)
+
+C. If using separate domains, set CORS in Flask:
+   CORS(app, origins=["https://your-frontend-domain.com"], supports_credentials=True)
+
+----------------------------
+5. Database
+----------------------------
+- By default, uses SQLite (`users.db`). This is file-based and works for small/medium projects.
+- For production, use Railway/Render's PostgreSQL and update db.py/api.py accordingly.
+
+----------------------------
+6. Telegram Bot Notes
+----------------------------
+- Railway/Render free tier may sleep, which can interrupt polling bots.
+- For production, use Telegram webhooks (not polling) for reliability.
+- Make sure your bot token and channel ID are correct.
+
+----------------------------
+7. Common Issues
+----------------------------
+- IndentationError: Check all Python blocks are properly indented.
+- CORS error: Make sure frontend URL is allowed in Flask CORS config.
+- Port error: Use the $PORT env variable provided by Railway/Render.
+- Bot not responding: Check logs, ensure environment variables are set, and bot token is valid.
+- Database error: If schema changes, run migrations or delete/recreate the .db file.
+
+----------------------------
+8. Updating/Deploying
+----------------------------
+- Push your code to GitHub.
+- Connect Railway/Render to your repo.
+- Set environment variables in the dashboard.
+- Deploy!
+
+----------------------------
+9. Useful Commands
+----------------------------
+# Backend
+python api.py
+# or
+pip install gunicorn eventlet
+export PORT=5001
+exec gunicorn -k eventlet -w 1 api:app --bind 0.0.0.0:$PORT
+
+# Frontend
+cd admin
+npm install
+npm run build
+
+----------------------------
+10. Support
+----------------------------
+If you face any issues, check the logs on Railway/Render, or open an issue on GitHub. 

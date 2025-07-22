@@ -1,0 +1,118 @@
+============================
+টেলিগ্রাম বট অ্যাডমিন ড্যাশবোর্ড ডিপ্লয়মেন্ট গাইড (বাংলা)
+============================
+
+এই প্রজেক্টে যা আছে:
+- Python Flask backend (REST API, SocketIO, Telegram bot logic)
+- React (MUI) frontend (admin dashboard UI)
+- SQLite ডাটাবেস (ডিফল্ট, চাইলে PostgreSQL ব্যবহার করা যাবে)
+- python-telegram-bot ও pyrogram দিয়ে টেলিগ্রাম ইন্টিগ্রেশন
+
+Railway, Render, Heroku, VPS বা নিজের সার্ভারে ডিপ্লয় করতে পারবেন।
+
+----------------------------
+১. প্রয়োজনীয় সফটওয়্যার ও তথ্য
+----------------------------
+- Python 3.9+
+- Node.js 16+
+- Git
+- (সুপারিশকৃত) Railway/Render/Heroku অ্যাকাউন্ট
+- Telegram Bot Token, API_ID, API_HASH, CHANNEL_ID
+
+----------------------------
+২. Environment Variables সেটআপ
+----------------------------
+`.env` ফাইল তৈরি করুন অথবা Railway/Render dashboard-এ নিচের তথ্যগুলো দিন:
+
+BOT_TOKEN=আপনার_টেলিগ্রাম_বট_টোকেন
+API_ID=আপনার_pyrogram_api_id
+API_HASH=আপনার_pyrogram_api_hash
+CHANNEL_ID=@আপনার_চ্যানেল_ইউজারনেম_বা_ID
+CHANNEL_URL=https://t.me/আপনার_চ্যানেল
+#Optional: WELCOME_TEXT=Welcome {mention} to {title}!
+
+----------------------------
+৩. Backend (Flask) ডিপ্লয়
+----------------------------
+A. ডিপেন্ডেন্সি ইন্সটল করুন:
+   pip install -r requirements.txt
+
+B. `api.py`-তে port dynamic করুন:
+   import os
+   port = int(os.environ.get("PORT", 5001))
+   socketio.run(app, host="0.0.0.0", port=port)
+
+C. Backend চালান:
+   python api.py
+   # অথবা production-এ:
+   gunicorn -k eventlet -w 1 api:app --bind 0.0.0.0:$PORT
+
+D. Railway/Render-এ:
+   - উপরের start command দিন
+   - Environment variables dashboard-এ দিন
+   - সঠিক port ($PORT) expose করুন
+
+----------------------------
+৪. Frontend (React) ডিপ্লয়
+----------------------------
+A. React app build করুন:
+   cd admin
+   npm install
+   npm run build
+
+B. build ফোল্ডার serve করুন:
+   - Option 1: Flask দিয়ে static serve করুন (api.py-তে উদাহরণ দেখুন)
+   - Option 2: `admin/build` ফোল্ডার Railway/Netlify/Vercel-এ static site হিসেবে ডিপ্লয় করুন
+
+C. আলাদা ডোমেইন হলে Flask-এ CORS allow করুন:
+   CORS(app, origins=["https://your-frontend-domain.com"], supports_credentials=True)
+
+----------------------------
+৫. ডাটাবেস
+----------------------------
+- ডিফল্টভাবে SQLite (`users.db`) ব্যবহার হয়। ছোট/মাঝারি প্রজেক্টে যথেষ্ট।
+- বড় প্রজেক্টে Railway/Render-এর PostgreSQL ব্যবহার করুন এবং db.py/api.py আপডেট করুন।
+
+----------------------------
+৬. টেলিগ্রাম বট সংক্রান্ত
+----------------------------
+- Railway/Render ফ্রি টায়ার ঘুমিয়ে যেতে পারে, এতে polling bot বন্ধ হয়ে যেতে পারে।
+- প্রোডাকশনে Telegram webhook ব্যবহার করা ভালো (polling-এর বদলে)।
+- Bot token ও channel ID সঠিক কিনা চেক করুন।
+
+----------------------------
+৭. সাধারণ সমস্যা ও সমাধান
+----------------------------
+- IndentationError: Python কোডে সব ব্লক ঠিকমতো indent আছে কিনা দেখুন।
+- CORS error: Flask-এ frontend URL allow করা আছে কিনা দেখুন।
+- Port error: Railway/Render-এর $PORT env variable ব্যবহার করুন।
+- Bot কাজ করছে না: লগ চেক করুন, environment variables ঠিক আছে কিনা দেখুন, bot token সঠিক কিনা দেখুন।
+- Database error: schema পরিবর্তন হলে .db ফাইল ডিলিট/রিমেক করুন বা মাইগ্রেশন চালান।
+
+----------------------------
+৮. আপডেট/ডিপ্লয়
+----------------------------
+- কোড GitHub-এ push করুন।
+- Railway/Render-এ repo connect করুন।
+- Dashboard-এ environment variables দিন।
+- Deploy করুন!
+
+----------------------------
+৯. দরকারি কমান্ড
+----------------------------
+# Backend
+python api.py
+# অথবা
+pip install gunicorn eventlet
+export PORT=5001
+gunicorn -k eventlet -w 1 api:app --bind 0.0.0.0:$PORT
+
+# Frontend
+cd admin
+npm install
+npm run build
+
+----------------------------
+১০. সহায়তা
+----------------------------
+কোনো সমস্যা হলে Railway/Render-এর লগ চেক করুন, অথবা GitHub-এ issue খুলুন। 
