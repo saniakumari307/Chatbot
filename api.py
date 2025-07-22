@@ -16,7 +16,7 @@ CORS(app, origins=[
     "http://192.168.1.3:3000",
     "https://verdant-puffpuff-569da6.netlify.app"
 ], supports_credentials=True)
-socketio = SocketIO(app, async_mode='threading', cors_allowed_origins=[
+socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins=[
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://192.168.1.3:3000",
