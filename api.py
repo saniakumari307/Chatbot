@@ -13,12 +13,14 @@ app.secret_key = 'change_this_secret_key'
 CORS(app, origins=[
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://192.168.1.3:3000"
+    "http://192.168.1.3:3000",
+    "https://moonlit-begonia-0c230d.netlify.app"
 ], supports_credentials=True)
 socketio = SocketIO(app, async_mode='threading', cors_allowed_origins=[
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://192.168.1.3:3000"
+    "http://192.168.1.3:3000",
+    "https://moonlit-begonia-0c230d.netlify.app"
 ])
 
 DB_NAME = 'users.db'
